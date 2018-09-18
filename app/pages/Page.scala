@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package identifiers
+package pages
 
-import models.LastPage
+import scala.language.implicitConversions
 
-object LastPageId extends TypedIdentifier[LastPage] {
-  override def toString: String = "lastPage"
+trait Page
+
+object Page {
+
+  implicit def toString(page: Page): String =
+    page.toString
 }

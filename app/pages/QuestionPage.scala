@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import play.api.libs.json.{Format, Json}
+import utils.UserAnswers
 
-case class LastPage(method: String, url: String)
+trait QuestionPage[A] extends Page {
 
-object LastPage {
-  implicit val formatsLastPage: Format[LastPage] = Json.format[LastPage]
+  def cleanup(value: Option[A], userAnswers: UserAnswers): UserAnswers = userAnswers
 }
