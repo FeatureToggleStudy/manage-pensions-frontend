@@ -17,42 +17,43 @@
 package utils.navigators
 
 import base.SpecBase
-import connectors.FakeDataCacheConnector
-import identifiers.{PsaNameId, Identifier}
+import identifiers.PsaNameId
 import models.requests.IdentifiedRequest
+import navigators.NavigatorBehaviour
 import org.scalatest.OptionValues
-import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.{Enumerable, UserAnswers}
 
 class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   import InvitationNavigatorSpec._
 
-  val navigator = new InvitationNavigator(FakeDataCacheConnector)
+  val navigator = new InvitationNavigator()
 
-  def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (PsaNameId, emptyAnswers, psaNamePage, true, None, false)
+  private val routes = Table(
+    ("Id", "User Answers", "Next Page (Normal Mode)", "Next Page (Check Mode)"),
+    (PsaNameId, psaNameAnswers, psaNameCall, None),
+    (PsaNameId, emptyAnswers, defaultCall, None)
   )
 
   navigator.getClass.getSimpleName must {
     appRunning()
-    behave like nonMatchingNavigator(navigator)
-    behave like navigatorWithRoutes(navigator, FakeDataCacheConnector, routes(), dataDescriber)
+    behave like navigatorWithRoutes(navigator, routes, dataDescriber)
   }
 }
 
-object InvitationNavigatorSpec extends OptionValues {
+object InvitationNavigatorSpec extends OptionValues with Enumerable.Implicits {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val psaNamePage: Call = controllers.routes.IndexController.onPageLoad()
-
+  lazy val psaNameAnswers = UserAnswers(Json.obj(PsaNameId.toString -> "answer"))
+  lazy val psaNameCall: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val defaultCall: Call = controllers.routes.SessionExpiredController.onPageLoad()
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"
   }
+
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString

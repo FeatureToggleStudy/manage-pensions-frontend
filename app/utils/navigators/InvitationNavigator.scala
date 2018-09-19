@@ -20,20 +20,29 @@ import javax.inject.{Inject, Singleton}
 
 import connectors.DataCacheConnector
 import controllers.routes
-import identifiers.PsaNameId
+import identifiers.{Identifier, PsaNameId}
 import models.{CheckMode, NormalMode}
 import play.api.mvc.Call
-import utils.Navigator
+import utils.{UserAnswers, Navigator}
 
 @Singleton
-class InvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
+class InvitationNavigator @Inject()() extends Navigator {
 
-  override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case PsaNameId => NavigateTo.save(routes.IndexController.onPageLoad())
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  override def routeMap: PartialFunction[Identifier, UserAnswers => Call] = {
+    case PsaNameId => addInvitationRoutes()
   }
 
-  override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  override protected def editRouteMap: PartialFunction[Identifier, UserAnswers => Call] = {
+    case _ => addInvitationRoutes()
+  }
+
+  private def addInvitationRoutes()(answers: UserAnswers): Call = {
+
+    answers.get(PsaNameId) match {
+      case Some(_) =>
+        controllers.routes.IndexController.onPageLoad()
+      case None =>
+        controllers.routes.SessionExpiredController.onPageLoad()
+    }
   }
 }
