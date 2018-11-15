@@ -18,6 +18,7 @@ package config
 
 import org.scalatest.{FlatSpec, Matchers}
 import play.api.Configuration
+import utils.FakeFeaturesConnector
 
 class FeaturesImplSpec extends FlatSpec with Matchers {
 
@@ -25,7 +26,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
   "Features" should "configure an empty list of feature toggles if there is no configuration" in {
 
-    val features = new FeaturesImpl(Configuration())
+    val features = new FeaturesImpl(Configuration(), new FakeFeaturesConnector())
 
     features.toggles shouldBe empty
 
@@ -36,7 +37,8 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
     val features = new FeaturesImpl(
       Configuration(
         "x-features.toggles" -> Map.empty
-      )
+      ),
+      new FakeFeaturesConnector()
     )
 
     features.toggles shouldBe empty
@@ -53,7 +55,8 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
             WP2 -> false
           )
         )
-      )
+      ),
+      new FakeFeaturesConnector()
     )
 
     features.toggles should contain allOf(FeatureToggle(WP1, true), FeatureToggle(WP2, false))
@@ -62,7 +65,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
   it should "configure an empty list of informed services if there is no configuration" in {
 
-    val features = new FeaturesImpl(Configuration())
+    val features = new FeaturesImpl(Configuration(), new FakeFeaturesConnector())
 
     features.services shouldBe empty
 
@@ -73,7 +76,8 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
     val features = new FeaturesImpl(
       Configuration(
         "x-features.informed-services" -> Seq.empty
-      )
+      ),
+      new FakeFeaturesConnector()
     )
 
     features.services shouldBe empty
@@ -90,7 +94,8 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
             SERVICE2
           )
         )
-      )
+      ),
+      new FakeFeaturesConnector()
     )
 
     features.services should contain allOf(SERVICE1, SERVICE2)
@@ -111,7 +116,8 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
           SERVICE2
         )
         )
-      )
+      ),
+      new FakeFeaturesConnector()
     )
 
     features.toggles should contain allOf(FeatureToggle(WP1, true), FeatureToggle(WP2, false))

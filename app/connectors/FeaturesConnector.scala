@@ -44,7 +44,7 @@ class FeaturesConnectorImpl @Inject()(
 
   override def inform(service: String, what: InformWhat): Future[Unit] = {
 
-    val url = baseUrl(service) + what.url
+    val url = s"${baseUrl(service)}/${getConfString("base-url", "")}/${what.url}"  //baseUrl(service) + what.url
 
     ws.url(url).get().map {
       response =>

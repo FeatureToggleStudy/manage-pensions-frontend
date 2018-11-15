@@ -1,0 +1,93 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package connectors
+
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import config.InformEnable
+import org.scalatest.{AsyncFlatSpec, BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
+import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
+
+class FeaturesConnectorSpec extends AsyncFlatSpec with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+
+  protected val server: WireMockServer = new WireMockServer(wireMockConfig().dynamicPort())
+
+  private val app = new GuiceApplicationBuilder()
+    .configure(
+      "microservice" -> Map(
+        "services" -> Map(
+          "fake-service" -> Map(
+            "host" -> "localhost",
+            "port" -> server.port(),
+            "base-url" -> "fake-base-url"
+          )
+        )
+      )
+    )
+    .build()
+
+  "FeaturesConnector" should "inform of enable feature toggle events" in {
+
+    server.stubFor(
+      get(urlEqualTo("/test-only/toggles/fake-feature/enable"))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+        )
+    )
+
+    app.injector.instanceOf[FeaturesConnector].inform("fake-service", InformEnable("fake-feature")).map {
+      _ =>
+        succeed
+    }
+
+  }
+
+  it should "inform of disable feature toggle events" in {
+    pending
+  }
+
+  it should "inform of disable all feature toggle events" in {
+    pending
+  }
+
+  it should "inform of reset feature toggle events" in {
+    pending
+  }
+
+  it should "throw RuntimeExceptrion if any call returns a status other than OK" in {
+    pending
+  }
+
+  override def beforeAll(): Unit = {
+    server.start()
+    super.beforeAll()
+  }
+
+  override def beforeEach(): Unit = {
+    server.resetAll()
+    super.beforeEach()
+  }
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    server.stop()
+  }
+
+}

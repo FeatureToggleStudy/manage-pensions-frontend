@@ -19,6 +19,7 @@ package toggles
 import config.FrontendAppConfig
 import org.scalatest.{Matchers, WordSpec}
 import play.api.{Configuration, Environment}
+import utils.FakeFeatures
 
 class FeatureToggleBehaviours extends WordSpec with Matchers {
 
@@ -56,7 +57,8 @@ object FeatureToggleBehaviours {
       } {
         b => Configuration(s"features.$name" -> b.toString)
       },
-      Environment.simple()
+      Environment.simple(),
+      FakeFeatures()
     )
 
   }
