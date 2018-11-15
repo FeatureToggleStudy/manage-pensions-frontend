@@ -46,7 +46,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     val app: Application =
       new GuiceApplicationBuilder()
         .configure(
-          "features.work-package-one-enabled" -> enabled
+          "features.toggles" -> Map(
+            "work-package-one-enabled" -> enabled
+          )
         )
         .build()
 

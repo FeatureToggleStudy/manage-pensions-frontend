@@ -142,7 +142,7 @@ class FeaturesImpl @Inject() (configuration: Configuration, connector: FeaturesC
   }
 
   private def readToggles(): Seq[FeatureToggle] =
-    configuration.getObject("x-features.toggles").map {
+    configuration.getObject("features.toggles").map {
       _.toConfig.entrySet().map {
         toggle =>
           val name = toggle.getKey
@@ -152,7 +152,7 @@ class FeaturesImpl @Inject() (configuration: Configuration, connector: FeaturesC
     }.getOrElse(Seq.empty)
 
   private def readServices(): Seq[String] =
-    configuration.getStringList("x-features.informed-services").map {
+    configuration.getStringList("features.informed-services").map {
       _.map {
         identity
       }.toSeq

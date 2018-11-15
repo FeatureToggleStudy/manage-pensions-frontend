@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import org.jsoup.Jsoup
 import play.api.Environment
 import play.twirl.api.HtmlFormat
+import utils.FakeFeatures
 import viewmodels.AssociatedPsa
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
@@ -33,7 +34,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
 
-  class fakeFrontendAppConfig(invitationsEnabled: Boolean, wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
+  class fakeFrontendAppConfig(invitationsEnabled: Boolean, wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment], FakeFeatures()) {
     override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
     override lazy val workPackageTwoEnabled: Boolean = wp2Enabled
   }

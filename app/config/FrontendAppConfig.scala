@@ -64,7 +64,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
 
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
-  lazy val isWorkPackageOneEnabled: Boolean = runModeConfiguration.getBoolean("features.work-package-one-enabled").getOrElse(false)
+  def isWorkPackageOneEnabled: Boolean = features.isEnabled("work-package-one-enabled")
   lazy val registerSchemeUrl = runModeConfiguration.underlying.getString(("urls.registerScheme"))
   lazy val listOfSchemesUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
@@ -87,5 +87,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val locationCanonicalList = loadConfig("location.canonical.list")
   lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")
   lazy val addressLookUp = baseUrl("address-lookup")
+
+  def workPackageTwoEnabled: Boolean = features.isEnabled("work-package-two-enabled")
 
 }

@@ -36,7 +36,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
     val features = new FeaturesImpl(
       Configuration(
-        "x-features.toggles" -> Map.empty
+        "features.toggles" -> Map.empty
       ),
       new FakeFeaturesConnector()
     )
@@ -49,7 +49,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
     val features = new FeaturesImpl(
       Configuration(
-        "x-features" -> Map(
+        "features" -> Map(
           "toggles" -> Map(
             WP1 -> true,
             WP2 -> false
@@ -75,7 +75,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
     val features = new FeaturesImpl(
       Configuration(
-        "x-features.informed-services" -> Seq.empty
+        "features.informed-services" -> Seq.empty
       ),
       new FakeFeaturesConnector()
     )
@@ -88,7 +88,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
     val features = new FeaturesImpl(
       Configuration(
-        "x-features" -> Map(
+        "features" -> Map(
           "informed-services" -> List(
             SERVICE1,
             SERVICE2
@@ -106,7 +106,7 @@ class FeaturesImplSpec extends FlatSpec with Matchers {
 
     val features = new FeaturesImpl(
       Configuration(
-        "x-features" -> Map(
+        "features" -> Map(
           "toggles" -> Map(
             WP1 -> true,
             WP2 -> false

@@ -33,7 +33,9 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   private def config(toggle: Boolean = true): FrontendAppConfig = {
     val injector = new GuiceApplicationBuilder().configure(
-      "features.work-package-one-enabled" -> toggle
+      "features.toggles" -> Map(
+        "work-package-one-enabled" -> toggle
+      )
     ).build().injector
     injector.instanceOf[FrontendAppConfig]
   }
