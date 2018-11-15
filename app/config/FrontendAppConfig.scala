@@ -25,7 +25,7 @@ import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 @Singleton
-class FrontendAppConfig @Inject()(override val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig {
+class FrontendAppConfig @Inject()(override val runModeConfiguration: Configuration, environment: Environment, val features: Features) extends ServicesConfig {
 
   override protected def mode: Mode = environment.mode
 
@@ -76,8 +76,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val removePsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
 
   def languageMap: Map[String, Lang] = Map(
-    "english" -> Lang("en"),
-    "cymraeg" -> Lang("cy"))
+  "english" -> Lang("en"),
+  "cymraeg" -> Lang("cy"))
 
   def routeToSwitchLanguage: String => Call = (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
@@ -89,4 +89,5 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val addressLookUp = baseUrl("address-lookup")
 
   lazy val workPackageTwoEnabled: Boolean = runModeConfiguration.getBoolean("features.work-package-two-enabled").getOrElse(false)
+
 }

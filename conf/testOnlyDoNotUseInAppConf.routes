@@ -13,3 +13,8 @@
 ->         /                          prod.Routes
 
 GET        /manage-pension-schemes/test-only/mongo-diagnostics                          controllers.testonly.MongoDiagnosticsController.mongoDiagnostics()
+GET        /manage-pension-schemes/test-only/toggles                                    controllers.testonly.FeaturesController.toggles()
+GET        /manage-pension-schemes/test-only/toggles/reset                              controllers.testonly.FeaturesController.reset()
+GET        /manage-pension-schemes/test-only/toggles/disable-all                        controllers.testonly.FeaturesController.disableAll()
+GET        /manage-pension-schemes/test-only/toggles/:name/enable                       controllers.testonly.FeaturesController.enable(name: String)
+GET        /manage-pension-schemes/test-only/toggles/:name/disable                      controllers.testonly.FeaturesController.disable(name: String)
