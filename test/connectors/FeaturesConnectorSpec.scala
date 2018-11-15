@@ -19,7 +19,7 @@ package connectors
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import config.InformEnable
+import config.{InformDisable, InformDisableAll, InformEnable, InformReset}
 import org.scalatest.{AsyncFlatSpec, BeforeAndAfterAll, BeforeAndAfterEach, Matchers}
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -28,14 +28,14 @@ class FeaturesConnectorSpec extends AsyncFlatSpec with Matchers with BeforeAndAf
 
   protected val server: WireMockServer = new WireMockServer(wireMockConfig().dynamicPort())
 
-  private val app = new GuiceApplicationBuilder()
+  private lazy val app = new GuiceApplicationBuilder()
     .configure(
       "microservice" -> Map(
         "services" -> Map(
           "fake-service" -> Map(
             "host" -> "localhost",
             "port" -> server.port(),
-            "base-url" -> "fake-base-url"
+            "base-url" -> "/fake-base-url"
           )
         )
       )
@@ -45,7 +45,7 @@ class FeaturesConnectorSpec extends AsyncFlatSpec with Matchers with BeforeAndAf
   "FeaturesConnector" should "inform of enable feature toggle events" in {
 
     server.stubFor(
-      get(urlEqualTo("/test-only/toggles/fake-feature/enable"))
+      get(urlEqualTo("/fake-base-url/test-only/toggles/fake-feature/enable"))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -60,34 +60,84 @@ class FeaturesConnectorSpec extends AsyncFlatSpec with Matchers with BeforeAndAf
   }
 
   it should "inform of disable feature toggle events" in {
-    pending
+
+    server.stubFor(
+      get(urlEqualTo("/fake-base-url/test-only/toggles/fake-feature/disable"))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+        )
+    )
+
+    app.injector.instanceOf[FeaturesConnector].inform("fake-service", InformDisable("fake-feature")).map {
+      _ =>
+        succeed
+    }
+
   }
 
   it should "inform of disable all feature toggle events" in {
-    pending
+
+    server.stubFor(
+      get(urlEqualTo("/fake-base-url/test-only/toggles/disable-all"))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+        )
+    )
+
+    app.injector.instanceOf[FeaturesConnector].inform("fake-service", InformDisableAll).map {
+      _ =>
+        succeed
+    }
+
   }
 
   it should "inform of reset feature toggle events" in {
-    pending
+
+    server.stubFor(
+      get(urlEqualTo("/fake-base-url/test-only/toggles/reset"))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+        )
+    )
+
+    app.injector.instanceOf[FeaturesConnector].inform("fake-service", InformReset).map {
+      _ =>
+        succeed
+    }
+
   }
 
   it should "throw RuntimeExceptrion if any call returns a status other than OK" in {
-    pending
+
+    server.stubFor(
+      get(urlMatching(".*"))
+        .willReturn(
+          aResponse()
+            .withStatus(BAD_REQUEST)
+        )
+    )
+
+    recoverToSucceededIf[RuntimeException] {
+      app.injector.instanceOf[FeaturesConnector].inform("fake-service", InformReset)
+    }
+
   }
 
   override def beforeAll(): Unit = {
     server.start()
-    super.beforeAll()
   }
 
   override def beforeEach(): Unit = {
     server.resetAll()
-    super.beforeEach()
   }
 
   override def afterAll(): Unit = {
-    super.afterAll()
-    server.stop()
+    if (server.isRunning) {
+      server.stop()
+    }
   }
 
 }
